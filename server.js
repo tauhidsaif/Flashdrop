@@ -12,6 +12,10 @@ const io = new Server(server);
 // Middleware
 app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
+app.get("/", (req, res) => {
+  res.send("FlashDrop backend is running");
+});
+
 
 // Socket.IO Logic
 io.on("connection", (socket) => {
