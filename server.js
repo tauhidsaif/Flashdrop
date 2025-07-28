@@ -4,6 +4,8 @@ const { Server } = require("socket.io");
 const path = require("path");
 const cors = require("cors");
 const os = require("os");
+const compression = require("compression");
+
 
 const app = express();
 const server = http.createServer(app);
@@ -16,6 +18,7 @@ const io = new Server(server, {
 
 
 // Middleware
+app.use(compression()); // <-- Add this
 app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
