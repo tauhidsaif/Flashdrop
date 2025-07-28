@@ -8,7 +8,7 @@ let sending = false; // NEW FLAG to prevent overlapping sends
 let offset = 0;
 let arrayBuffer;
 let totalSize = 0;
-let chunkSize = 64 * 1024;
+let chunkSize = 256 * 1024;
 let senderProgress;
 
 
@@ -111,6 +111,7 @@ function setupConnection() {
   if (isSender) {
     // ✅ SENDER: create data channel
      dataChannel = peerConnection.createDataChannel("file");
+    dataChannel.bufferedAmountLowThreshold = 8 * 1024 * 1024;
       dataChannel.addEventListener("bufferedamountlow", () => {
       console.log("🟢 Buffered amount low — resuming sendNextChunkStreaming");
       sendNextChunkStreaming(document.getElementById("fileInput").files[0]);
@@ -235,7 +236,7 @@ function sendNextChunkStreaming(file) {
     return;
   }
 
-  if (dataChannel.bufferedAmount > 16 * 1024 * 1024) {
+  if (dataChannel.bufferedAmount > 32 * 1024 * 1024) {
     console.warn("⏸️ Paused: Buffer full");
     return; // Wait for bufferedamountlow
   }
