@@ -10,6 +10,7 @@ let arrayBuffer;
 let totalSize = 0;
 let chunkSize = 256 * 1024;
 let senderProgress;
+let isPaused = false;
 
 
 
@@ -223,6 +224,7 @@ function sendFile() {
   offset = 0;
   arrayBuffer = null;
   sending = true;
+  document.getElementById("pauseBtn").style.display = "inline-block";
   sendNextChunkStreaming(file);
 
 
@@ -230,23 +232,40 @@ function sendFile() {
 
 
 function sendNextChunkStreaming(file) {
-  if (offset >= file.size) {
-    console.log("✅ File sent completely");
+  if (!dataChannel || dataChannel.readyState !== "open" || isPaused) {
     sending = false;
     return;
   }
 
-  if (dataChannel.bufferedAmount > 32 * 1024 * 1024) {
-    console.warn("⏸️ Paused: Buffer full");
-    return; // Wait for bufferedamountlow
+  if (offset >= totalSize) {
+    console.log("File sent completely");
+    sending = false;
+    document.getElementById("pauseBtn").style.display = "none";
+    return;
   }
 
-  const chunk = file.slice(offset, offset + chunkSize);
-  const reader = new FileReader();
+  // Initialize the worker if not already done
+  if (!window.fileWorker) {
+    window.fileWorker = new Worker("fileWorker.js");
+  }
 
-  reader.onload = (event) => {
-    const buffer = event.target.result;
-    dataChannel.send(buffer);
+  // Handle the worker's response
+  fileWorker.onmessage = function (e) {
+    const { buffer, error } = e.data;
+    if (error) {
+      console.error("Worker error:", error);
+      sending = false;
+      return;
+    }
+
+    try {
+      dataChannel.send(buffer);
+    } catch (err) {
+      console.error("DataChannel send failed:", err);
+      sending = false;
+      return;
+    }
+
     offset += buffer.byteLength;
 
     const mbSent = (offset / (1024 * 1024)).toFixed(2);
@@ -254,16 +273,15 @@ function sendNextChunkStreaming(file) {
     const mbRemaining = (mbTotal - mbSent).toFixed(2);
     senderProgress.innerText = `Sender: Sent ${mbSent} MB / ${mbTotal} MB (${mbRemaining} MB remaining)`;
 
-    // Immediately send next chunk
     setTimeout(() => sendNextChunkStreaming(file), 0);
   };
 
-  reader.onerror = (err) => {
-    console.error("❌ Error reading chunk", err);
-    sending = false;
-  };
-
-  reader.readAsArrayBuffer(chunk);
+  // Request next chunk
+  fileWorker.postMessage({
+    file,
+    offset,
+    chunkSize
+  });
 }
 
 
@@ -405,4 +423,25 @@ document.getElementById("roomReceive").addEventListener("input", () => {
 
 document.getElementById("fileInput").addEventListener("change", () => {
   document.getElementById("sendErrorMsg").style.display = "none";
+});
+
+
+
+// ✅ Pause and Resume handlers
+document.getElementById("pauseBtn").addEventListener("click", () => {
+  isPaused = true;
+  document.getElementById("pauseBtn").style.display = "none";
+  document.getElementById("resumeBtn").style.display = "inline-block";
+  console.log("⏸️ Paused");
+});
+
+document.getElementById("resumeBtn").addEventListener("click", () => {
+  if (!sending && isPaused) {
+    isPaused = false;
+    sending = true;
+    sendNextChunkStreaming(document.getElementById("fileInput").files[0]);
+    document.getElementById("resumeBtn").style.display = "none";
+    document.getElementById("pauseBtn").style.display = "inline-block";
+    console.log("▶️ Resumed");
+  }
 });
