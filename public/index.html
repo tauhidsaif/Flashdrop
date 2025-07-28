@@ -130,18 +130,25 @@
       <button id="pauseBtn" style="display:none;">⏸️ Pause</button>
       <button id="resumeBtn" style="display:none;">▶️ Resume</button>
 
+      <!-- ✅ Timer for sender -->
+      <p id="timeEstimate" style="text-align: center; margin-top: 10px;"></p>
     </div>
+
 
     <!-- Receive UI -->
     <div id="receiveUI">
       <input type="tel" id="roomReceive" placeholder="Enter Room Code" maxlength="6" pattern="[0-9]*" inputmode="numeric" />
       <div class="room-error-msg" id="errorMsg"></div>
       <button onclick="joinRoom()">Join Room</button>
+      <p id="receiverTimeEstimate" style="text-align: center; margin-top: 10px;"></p>
+      <p id="timeEstimate" style="text-align: center; margin-top: 10px;"></p>
+
     </div>
 
     <!-- Progress & Status -->
     <progress id="progressBar" value="0" max="100" style="display: none;"></progress>
     <p id="status">Status: Not connected</p>
+
   </main>
 
   <!-- Footer -->
