@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlashDrop - Fast P2P File Sharing</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+ <header class="navbar">
+  <div class="navbar-content">
+<a href="./index.html" class="logo">FlashDrop</a>
+    <div class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+      <span></span>
+    </div>
+
+  </div>
+  <nav>
+    <ul class="nav-links">
+      <li><a href="./index.html">Home</a></li>
+      <li><a href="./how.html">How It Works</a></li>
+      <li><a href="./support.html">Support</a></li>
+    </ul>
+  </nav>
+</header>
+
+
+  <!-- Main Interface -->
+  <main class="container">
+    <h1>📤 FlashDrop – Send Files Instantly</h1>
+    <p class="subtitle">Peer-to-peer file sharing powered by WebRTC – built by <strong>Mohd Tauhid</strong></p>
+
+    <!-- Role Selection -->
+    <div id="roleSelect">
+      <p>Select your role:</p>
+      <div class="button-group">
+        <button onclick="selectRole('send')">Send</button>
+        <button onclick="selectRole('receive')">Receive</button>
+      </div>
+    </div>
+
+    <!-- Send UI -->
+    <div id="sendUI">
+      <div class="room-row">
+        <strong>Room Code:</strong>
+        <span id="generatedRoomCode"></span>
+        <button onclick="copyRoomCode()">📋</button>
+      </div>
+      <span id="copyStatus">Copied!</span>
+
+      <input  required type="file" id="fileInput" />
+      <div id="sendErrorMsg" class="room-error-msg" style="display: none;"></div>
+      <button id="sendBtn" onclick="sendFile()" disabled>Send File</button>
+    </div>
+
+    <!-- Receive UI -->
+    <div id="receiveUI">
+      <input type="tel" id="roomReceive" placeholder="Enter Room Code" maxlength="6" pattern="[0-9]*" inputmode="numeric" />
+      <div class="room-error-msg" id="errorMsg"></div>
+      <button onclick="joinRoom()">Join Room</button>
+    </div>
+
+    <!-- Progress & Status -->
+    <progress id="progressBar" value="0" max="100" style="display: none;"></progress>
+    <p id="status">Status: Not connected</p>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Made with ❤️ by <strong>Mohd Tauhid</strong> | © 2025 FlashDrop</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+
+  <script>
+    function toggleMenu() {
+    const navLinks = document.querySelector(".nav-links");
+    const hamburger = document.querySelector(".hamburger");
+
+    navLinks.classList.toggle("nav-active");
+    hamburger.classList.toggle("active");
+  }
+  </script>
+
+</body>
+</html>
