@@ -11,6 +11,8 @@ let totalSize = 0;
 let chunkSize = 256 * 1024;
 let senderProgress;
 let isPaused = false;
+let startTime;
+let lastTimeEstimateUpdate = 0;
 
 
 
@@ -211,6 +213,9 @@ function sendFile() {
 
   chunkSize = 64 * 1024;
   offset = 0;
+  startTime = Date.now();
+  lastTimeEstimateUpdate = 0;
+
   arrayBuffer = null;
 
   totalSize = file.size;
@@ -267,6 +272,27 @@ function sendNextChunkStreaming(file) {
     }
 
     offset += buffer.byteLength;
+
+    const elapsedTime = (Date.now() - startTime) / 1000; // in seconds
+    const speed = offset / elapsedTime; // bytes/sec
+    const remainingBytes = file.size - offset;
+    const estimatedTime = remainingBytes / speed;
+
+    if (Date.now() - lastTimeEstimateUpdate > 1000) { // update every second
+      function formatTime(seconds) {
+      if (seconds < 60) return `${Math.ceil(seconds)} sec`;
+      if (seconds < 3600) return `${Math.floor(seconds / 60)} min ${Math.ceil(seconds % 60)} sec`;
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      return `${hrs} hr ${mins} min`;
+    }
+
+    document.getElementById("timeEstimate").innerText =
+      `⏳ Estimated time left: ${formatTime(estimatedTime)}`;
+
+      lastTimeEstimateUpdate = Date.now();
+    }
+
 
     const mbSent = (offset / (1024 * 1024)).toFixed(2);
     const mbTotal = (totalSize / (1024 * 1024)).toFixed(2);
@@ -373,6 +399,32 @@ function handleFileData(event) {
   const mbRemaining = (mbTotal - mbReceived).toFixed(2);
   updateReceiverProgress(totalBytes, expectedSize);
 
+  // === Estimated Time Remaining (Receiver) ===
+const now = Date.now();
+if (!window.startTimeReceiver) {
+  window.startTimeReceiver = now;
+  window.startReceivedSize = totalBytes;
+}
+
+const timeElapsed = (now - window.startTimeReceiver) / 1000; // seconds
+const dataReceived = totalBytes - window.startReceivedSize;
+const speed = dataReceived / timeElapsed; // bytes/sec
+
+const remainingBytes = expectedSize - totalBytes;
+const estimatedTimeLeft = remainingBytes / speed;
+
+function formatTime(seconds) {
+  if (seconds < 60) return `${Math.ceil(seconds)} sec`;
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} min ${Math.ceil(seconds % 60)} sec`;
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  return `${hrs} hr ${mins} min`;
+}
+
+document.getElementById("receiverTimeEstimate").innerText =
+  `⏳ Time left: ${formatTime(estimatedTimeLeft)}`;
+
+
 
 
   const progressBar = document.getElementById("progressBar");
@@ -395,6 +447,9 @@ function handleFileData(event) {
     totalBytes = 0;
     expectedSize = 0;
     receivedFilename = "received_file";
+    window.startTimeReceiver = null;
+    window.startReceivedSize = 0;
+    document.getElementById("receiverTimeEstimate").innerText = "";
     progressBar.style.display = "none";
   }
 }
