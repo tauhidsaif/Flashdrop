@@ -112,9 +112,10 @@ function setupConnection() {
     // ✅ SENDER: create data channel
      dataChannel = peerConnection.createDataChannel("file");
       dataChannel.addEventListener("bufferedamountlow", () => {
-      console.log("🟢 Buffered amount low — resuming sendNextChunk");
-      sendNextChunk(); // resume sending
+      console.log("🟢 Buffered amount low — resuming sendNextChunkStreaming");
+      sendNextChunkStreaming(document.getElementById("fileInput").files[0]);
     });
+
 
     dataChannel.onopen = () => console.log("Data channel opened");
     dataChannel.onclose = () => console.log("Data channel closed");
@@ -218,15 +219,52 @@ function sendFile() {
   // Send META first
   dataChannel.send("META:" + file.size + ":" + file.name);
 
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    arrayBuffer = event.target.result;
-    sendNextChunk(); // Only send one at a time
-  };
+  offset = 0;
+  arrayBuffer = null;
+  sending = true;
+  sendNextChunkStreaming(file);
 
-  reader.readAsArrayBuffer(file);
 
 }
+
+
+function sendNextChunkStreaming(file) {
+  if (offset >= file.size) {
+    console.log("✅ File sent completely");
+    sending = false;
+    return;
+  }
+
+  if (dataChannel.bufferedAmount > 16 * 1024 * 1024) {
+    console.warn("⏸️ Paused: Buffer full");
+    return; // Wait for bufferedamountlow
+  }
+
+  const chunk = file.slice(offset, offset + chunkSize);
+  const reader = new FileReader();
+
+  reader.onload = (event) => {
+    const buffer = event.target.result;
+    dataChannel.send(buffer);
+    offset += buffer.byteLength;
+
+    const mbSent = (offset / (1024 * 1024)).toFixed(2);
+    const mbTotal = (totalSize / (1024 * 1024)).toFixed(2);
+    const mbRemaining = (mbTotal - mbSent).toFixed(2);
+    senderProgress.innerText = `Sender: Sent ${mbSent} MB / ${mbTotal} MB (${mbRemaining} MB remaining)`;
+
+    // Immediately send next chunk
+    setTimeout(() => sendNextChunkStreaming(file), 0);
+  };
+
+  reader.onerror = (err) => {
+    console.error("❌ Error reading chunk", err);
+    sending = false;
+  };
+
+  reader.readAsArrayBuffer(chunk);
+}
+
 
 function sendNextChunk() {
   if (!arrayBuffer) {
