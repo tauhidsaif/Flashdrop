@@ -74,11 +74,22 @@ function joinRoom() {
 }
 
 function setupConnection() {
-      peerConnection = new RTCPeerConnection({
-      iceServers: [
-        { urls: "stun:stun.l.google.com:19302" } // Enables NAT traversal for real-world WebRTC
-      ]
-    });
+  
+     peerConnection = new RTCPeerConnection({
+  iceServers: [
+    {
+      urls: "stun:stun.l.google.com:19302"
+    },
+    {
+      urls: "turn:openrelay.metered.ca:80",
+      username: "openrelayproject",
+      credential: "openrelayproject"
+    }
+  ]
+});
+
+
+
 
 
   // ✅ ICE candidate handling
