@@ -7,14 +7,21 @@ const os = require("os");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Or your frontend URL like: "https://flashdrop-t3v0.onrender.com"
+    methods: ["GET", "POST"]
+  }
+});
+
 
 // Middleware
 app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
-  res.send("FlashDrop backend is running");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
+
 
 
 // Socket.IO Logic
