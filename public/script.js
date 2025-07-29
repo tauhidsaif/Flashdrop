@@ -86,15 +86,44 @@ function setupConnection() {
   
 peerConnection = new RTCPeerConnection({
   iceServers: isLocalNetwork
-    ? [] // no STUN/TURN — only local
-    : [
-        { urls: "stun:stun.l.google.com:19302" },
-        {
-          urls: "turn:openrelay.metered.ca:80",
-          username: "openrelayproject",
-          credential: "openrelayproject"
-        }
-      ]
+  ? []
+  : [
+      { urls: "stun:stun.l.google.com:19302" },
+      {
+        urls: "turn:openrelay.metered.ca:80",
+        username: "openrelayproject",
+        credential: "openrelayproject"
+      },
+      {
+        urls: "turn:openrelay.metered.ca:443?transport=tcp",
+        username: "openrelayproject",
+        credential: "openrelayproject"
+      },
+      {
+        urls: "turn:numb.viagenie.ca",
+        username: "webrtc@live.com",
+        credential: "muazkh"
+      },
+      {
+        urls: "turn:relay1.expressturn.com:3478",
+        username: "efcfree",
+        credential: "efcfree"
+      },
+      {
+        urls: "turn:relay2.expressturn.com:80",
+        username: "efcfree",
+        credential: "efcfree"
+      },
+      
+      {
+      urls: "turn:turn.anyfirewall.com:443?transport=tcp",
+      username: "webrtc",
+      credential: "webrtc"
+    }
+
+    ]
+
+
 });
 
 
@@ -108,14 +137,30 @@ peerConnection = new RTCPeerConnection({
     }
   };
 
-  // ✅ Connection state logging
-  peerConnection.onconnectionstatechange = () => {
-    console.log("Connection state:", peerConnection.connectionState);
-    if (peerConnection.connectionState === "connected") {
-      document.getElementById("status").innerText = "Connected ✅";
-      document.getElementById("sendBtn").disabled = false;
-    }
-  };
+ // ✅ Connection state logging and connection type detection
+peerConnection.onconnectionstatechange = () => {
+  console.log("Connection state:", peerConnection.connectionState);
+  if (peerConnection.connectionState === "connected") {
+    document.getElementById("status").innerText = "Connected ✅";
+    document.getElementById("sendBtn").disabled = false;
+
+    // Check connection type: TURN vs P2P
+    peerConnection.getStats().then(stats => {
+      stats.forEach(report => {
+        if (report.type === "candidate-pair" && report.state === "succeeded") {
+          const connectionType = report.localCandidateType === "relay" ? "TURN (relayed)" : "P2P (direct)";
+          console.log("📡 Connection type:", connectionType);
+
+          // Optional: show it in the UI
+          const connInfo = document.createElement("p");
+          connInfo.textContent = `Connection type: ${connectionType}`;
+          document.getElementById("status").after(connInfo);
+        }
+      });
+    });
+  }
+};
+
 
   if (isSender) {
     // ✅ SENDER: create data channel
@@ -218,6 +263,7 @@ function sendFile() {
   errorBox.style.display = "none";
 
   chunkSize = 64 * 1024;
+  chunkSize = isLocalNetwork ? 64 * 1024 : 256 * 1024;
   offset = 0;
   startTime = Date.now();
   lastTimeEstimateUpdate = 0;

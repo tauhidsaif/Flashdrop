@@ -1,22 +1,30 @@
+// fileWorker.js
+
 self.onmessage = function (e) {
   const { file, offset, chunkSize } = e.data;
-  const reader = new FileReader();
 
-  reader.onload = (event) => {
-    const buffer = event.target.result;
-    self.postMessage(
-      {
-        buffer,
-        offset,
-      },
-      [buffer] // ✅ Transfer instead of copy to improve performance
-    );
-  };
+  try {
+    const reader = new FileReader();
 
-  reader.onerror = (err) => {
-    self.postMessage({ error: err });
-  };
+    reader.onload = (event) => {
+      const buffer = event.target.result;
+      // ✅ Use transferable object to avoid memory copying
+      self.postMessage(
+        {
+          buffer,
+          offset,
+        },
+        [buffer] // Transferring the ownership of the ArrayBuffer
+      );
+    };
 
-  const chunk = file.slice(offset, offset + chunkSize);
-  reader.readAsArrayBuffer(chunk);
+    reader.onerror = (err) => {
+      self.postMessage({ error: err.message });
+    };
+
+    const chunk = file.slice(offset, offset + chunkSize);
+    reader.readAsArrayBuffer(chunk);
+  } catch (err) {
+    self.postMessage({ error: err.message });
+  }
 };
