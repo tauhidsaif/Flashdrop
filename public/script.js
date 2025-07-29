@@ -13,7 +13,17 @@ let senderProgress;
 let isPaused = false;
 let startTime;
 let lastTimeEstimateUpdate = 0;
+<<<<<<< HEAD
+let isLocalNetwork = false; // NEW: tracks if user chose local network
+=======
+>>>>>>> 2a0bbd6b52bd6a699a23bbcb96bb7b602bc98890
 
+
+function selectNetworkType(type) {
+  isLocalNetwork = type === "local";
+  document.getElementById("networkTypeSelect").style.display = "none";
+  document.getElementById("roleSelect").style.display = "block";
+}
 
 
 function selectRole(role) {
@@ -78,17 +88,17 @@ function joinRoom() {
 
 function setupConnection() {
   
-     peerConnection = new RTCPeerConnection({
-  iceServers: [
-    {
-      urls: "stun:stun.l.google.com:19302"
-    },
-    {
-      urls: "turn:openrelay.metered.ca:80",
-      username: "openrelayproject",
-      credential: "openrelayproject"
-    }
-  ]
+peerConnection = new RTCPeerConnection({
+  iceServers: isLocalNetwork
+    ? [] // no STUN/TURN — only local
+    : [
+        { urls: "stun:stun.l.google.com:19302" },
+        {
+          urls: "turn:openrelay.metered.ca:80",
+          username: "openrelayproject",
+          credential: "openrelayproject"
+        }
+      ]
 });
 
 
