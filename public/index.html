@@ -99,8 +99,20 @@
     <h1>📤 FlashDrop – Send Files Instantly</h1>
     <p class="subtitle">Peer-to-peer file sharing powered by WebRTC – built by <strong>Mohd Tauhid</strong></p>
 
+
+    <!-- Network Type Selection -->
+    <div id="networkTypeSelect">
+      <p>Select Network Type:</p>
+      <div class="button-group">
+        <button onclick="selectNetworkType('local')">📶 Same Wi-Fi</button>
+        <button onclick="selectNetworkType('remote')">🌐 Internet</button>
+      </div>
+    </div>
+
+   
+    
     <!-- Role Selection -->
-    <div id="roleSelect">
+    <div id="roleSelect" style="display: none;">
       <p>Select your role:</p>
       <div class="button-group">
         <button onclick="selectRole('send')">Send</button>
