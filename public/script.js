@@ -13,11 +13,7 @@ let senderProgress;
 let isPaused = false;
 let startTime;
 let lastTimeEstimateUpdate = 0;
-<<<<<<< HEAD
 let isLocalNetwork = false; // NEW: tracks if user chose local network
-=======
->>>>>>> 2a0bbd6b52bd6a699a23bbcb96bb7b602bc98890
-
 
 function selectNetworkType(type) {
   isLocalNetwork = type === "local";
