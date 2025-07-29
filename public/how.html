@@ -7,80 +7,102 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<style>
-  .main-content {
-    max-width: 800px;
-    margin: auto auto;
-    padding: 3rem;
-    background: rgba(255, 255, 255, 0.75);
-    border-radius: 20px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    text-align: center;
-    animation: fadeInUp 0.6s ease-in-out;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .main-content h1 {
-    font-size: 2.5rem;
-    font-weight: 600;
-    color: #1f1f1f;
-    margin-bottom: 1.5rem;
-  }
-
-  .main-content p {
-    font-size: 1.1rem;
-    color: #444;
-    margin-bottom: 2rem;
-    line-height: 1.8;
-  }
-
-  .main-content ol {
-    text-align: left;
-    padding-left: 1.4rem;
-    font-size: 1.05rem;
-    color: #333;
-  }
-
-  .main-content ol li {
-    margin-bottom: 1.2rem;
-    padding-left: 0.4rem;
-    position: relative;
-  }
-
-  .main-content ol li::marker {
-    color: #ff6b00;
-    font-weight: bold;
-  }
-
-  @media (max-width: 600px) {
+  <style>
     .main-content {
-      margin: 20px 1rem;
-      padding: 2rem;
+      max-width: 800px;
+      margin: auto auto;
+      padding: 3rem;
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      text-align: center;
+      animation: fadeInUp 0.6s ease-in-out;
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .main-content h1 {
-      font-size: 2rem;
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #1f1f1f;
+      margin-bottom: 1.5rem;
     }
 
-    .main-content p,
+    .main-content p {
+      font-size: 1.1rem;
+      color: #444;
+      margin-bottom: 2rem;
+      line-height: 1.8;
+    }
+
     .main-content ol {
-      font-size: 1rem;
+      text-align: left;
+      padding-left: 1.4rem;
+      font-size: 1.05rem;
+      color: #333;
     }
-  }
 
-  @keyframes fadeInUp {
-    0% {
-      opacity: 0;
-      transform: translateY(30px);
+    .main-content ol li {
+      margin-bottom: 1.2rem;
+      padding-left: 0.4rem;
+      position: relative;
     }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
+
+    .main-content ol li::marker {
+      color: #ff6b00;
+      font-weight: bold;
     }
-  }
-</style>
+
+    .info-block {
+      margin-top: 2.5rem;
+      text-align: left;
+      background-color: #f9f9f9;
+      padding: 1.5rem 2rem;
+      border-left: 5px solid #ff6b00;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    .info-block strong {
+      color: #1f1f1f;
+    }
+
+    .outer-container {
+      margin: 40px auto;
+      padding: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .main-content {
+        margin: 20px 1rem;
+        padding: 2rem;
+      }
+
+      .main-content h1 {
+        font-size: 2rem;
+      }
+
+      .main-content p,
+      .main-content ol,
+      .info-block {
+        font-size: 1rem;
+      }
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 
 </head>
 <body>
@@ -88,7 +110,7 @@
   <!-- ✅ Navbar -->
   <header class="navbar">
     <div class="navbar-content">
-<a href="./index.html" class="logo">FlashDrop</a>
+      <a href="./index.html" class="logo">FlashDrop</a>
       <div class="hamburger" onclick="toggleMenu()">
         <span></span>
         <span></span>
@@ -105,21 +127,54 @@
   </header>
 
   <!-- ✅ Main Content -->
+<div class="outer-container">
   <main class="main-content">
     <h1>How It Works</h1>
-    <p><strong>FlashDrop</strong> uses WebRTC and Socket.IO to transfer files directly between two devices on the same Wi-Fi or LAN. Nothing is stored on any server.</p>
-    <ol>
-      <li><strong>Sender:</strong> Click "Send" and get a secure 6-digit code.</li>
-      <li><strong>Receiver:</strong> Enter that code to connect to the sender.</li>
-      <li><strong>File Transfer:</strong> Begins instantly via direct peer-to-peer connection using WebRTC.</li>
-    </ol>
-  </main>
+    <p><strong>FlashDrop</strong> allows you to transfer large files directly between two devices without uploading to any server.</p>
 
-    <!-- Footer -->
+    <ol>
+      <li><strong>Step 1 — Choose Network Mode:</strong><br>
+        <ul style="margin-top: 0.5rem; margin-bottom: 0.5rem; padding-left: 1.2rem; list-style-type: disc;">
+          <li><strong>Same Wi-Fi:</strong> Both devices on same Wi-Fi or mobile hotspot.</li>
+          <li><strong>Internet Mode:</strong> Different networks (e.g., one on mobile data, one on Wi-Fi).</li>
+        </ul>
+      </li>
+
+      <li><strong>Step 2 — Choose Your Role:</strong><br>
+        Decide which device will send the file, and which one will receive it.
+      </li>
+
+      <li><strong>Step 3 — Sender:</strong><br>
+        Click "Send", select a file, and get a 6-digit code.
+      </li>
+
+      <li><strong>Step 4 — Receiver:</strong><br>
+        Click "Receive" and enter the code from the sender.
+      </li>
+
+      <li><strong>Step 5 — Transfer Begins:</strong><br>
+        File is sent directly from one device to another using WebRTC.
+      </li>
+    </ol>
+
+    <div class="info-block">
+
+      <strong>⚡ Smart Tip:</strong> For best performance, use “Same Wi-Fi” mode when devices are connected through a mobile hotspot or Wifi.<br><br>
+
+      <strong>🔐 Private & Secure:</strong> No files or data are saved on servers. All transfers are peer-to-peer and encrypted.<br><br>
+
+      <strong>🌐 Internet Mode Support:</strong> When devices are on different networks (e.g. phone on mobile data, laptop on hotspot), FlashDrop uses TURN servers to relay securely.<br><br>
+
+      <strong>🔁 Auto Fallback:</strong> If direct peer-to-peer fails (due to NAT/firewall), it will automatically switch to TURN relay mode.
+    </div>
+  </main>
+  </div>
+
+
+  <!-- Footer -->
   <footer class="footer">
     <p>Made with ❤️ by <strong>Mohd Tauhid</strong> | © 2025 FlashDrop</p>
   </footer>
-
 
   <!-- ✅ Scripts -->
   <script src="/socket.io/socket.io.js"></script>
